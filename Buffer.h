@@ -27,13 +27,11 @@ public:
 template <class T>
 Buffer<T>::Buffer(int size) : size_(size)
 {
-	L("Buffer::Buffer()");
 }
 
 template <class T>
 void Buffer<T>::push(T e)
 {
-	L("Buffer::push()");
 	m_.enter();
 	if (buf.size() == size_)
 		m_.wait(full_);

@@ -5,8 +5,18 @@
 #include <string>
 #include <iostream>
 #include <random>
+#include <sstream>
+#include <mutex>
+std::mutex desc_mutex;
 
+std::string desc(int j)
+{
+	std::lock_guard<std::mutex> guard(desc_mutex);
 
+	std::stringstream ss;
+	ss << j;
+	return ss.str();
+}
 
 int main(int argc, char **argv)
 {
@@ -30,7 +40,8 @@ int main(int argc, char **argv)
 
 
 		//Setting environment - shared buffer and function which generate numbers.
-		BufferUser<int>::Buffer_ = std::make_shared<Buffer<int> >(val.m);
+		BufferUser<int>::Buffer_ = std::make_shared<Buffer<int>>(val.m);
+		BufferUser<int>::Descriptor = desc;
 		Producer<int>::Function = magic;
 
 
@@ -47,7 +58,6 @@ int main(int argc, char **argv)
 		std::cout << "exception catch, exiting..." << std::endl;
 		return 1;
 	}
-
 
 	return 0;
 }
