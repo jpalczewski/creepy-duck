@@ -7,6 +7,7 @@
 #include <random>
 #include <sstream>
 #include <mutex>
+#include <memory>
 std::mutex desc_mutex;
 
 std::string desc(int j)
