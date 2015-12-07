@@ -25,7 +25,7 @@ void Client<T>::work()
 
 	while(--numOfElem>=0)
 	{
-		ret = BufferUser<T>::Buffer->pop();
+		ret = BufferUser<T>::Buffer_->pop();
 		std::cout << "[Client] got " << ret;
 	}
 }

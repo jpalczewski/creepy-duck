@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 		std::vector <std::auto_ptr<Producer<int> > > producers;
 		std::shared_ptr<Buffer<int> > buf = std::make_shared<Buffer<int> >(val.m);
 
-		BufferUser<int>::Buffer = buf;
+		BufferUser<int>::Buffer_ = buf;
 		
 		tab.push_back(Client<int>(val.n, val.k).Spawn());
 

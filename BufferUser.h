@@ -22,7 +22,7 @@ public:
 	std::thread Spawn();
 	virtual ~BufferUser();
 
-	static bufptr Buffer;
+	static bufptr Buffer_;
 };
 
 template <class T>
@@ -43,4 +43,4 @@ BufferUser<T>::~BufferUser()
 }
 
 template<class T>
-std::shared_ptr<Buffer<T> > BufferUser<T>::Buffer = nullptr;
+std::shared_ptr<Buffer<T> > BufferUser<T>::Buffer_ = nullptr;
