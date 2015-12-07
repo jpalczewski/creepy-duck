@@ -1,51 +1,46 @@
 #include "Client.h"
 #include "Producer.h"
+#include "Values.h"
 #include <vector>
 #include <string>
 #include <iostream>
+#include <random>
 
 
-int simple_random()
-{
-	return 42;
-}
 
-struct Values
-{
-	int n, m, k;
-
-	Values(int argc, char** argv)
-	{
-		if (argc != 4)
-			throw std::exception();
-		n = std::stoi(argv[1]);
-		m = std::stoi(argv[2]);
-		k = std::stoi(argv[3]);
-
-		if (n < 1 || m < 1 || k < 1)
-			throw std::exception();
-	}
-};
 int main(int argc, char **argv)
 {
 	std::cout << "Client & producers problem, monitor version" << std::endl;
 
 	try
 	{
+		//simple parser n: number of producers, m: buffer size, k: number which producers will produce.
 		Values val(argc, argv);
-		std::vector<std::thread> tab;
-		std::vector <std::auto_ptr<Producer<int> > > producers;
-		std::shared_ptr<Buffer<int> > buf = std::make_shared<Buffer<int> >(val.m);
 
-		BufferUser<int>::Buffer_ = buf;
-		
-		tab.push_back(Client<int>(val.n, val.k).Spawn());
+		//Variables related with thread-managing. 
+		std::vector<std::thread> tab;
+		std::vector< std::unique_ptr< BufferUser<int>>> pool;
+
+		//Variables realted with generating random numbers.
+		std::default_random_engine generator;
+		std::uniform_int_distribution<int> distribution(1, 10);
+
+		//Lets make a bind to ease our lives:
+		auto magic = std::bind(distribution, generator);
+
+
+		//Setting environment - shared buffer and function which generate numbers.
+		BufferUser<int>::Buffer_ = std::make_shared<Buffer<int> >(val.m);
+		Producer<int>::Function = magic;
+
+
+		pool.push_back(std::make_unique<Client<int>>(val.n, val.k));
 
 		for (auto i = 0; i < val.n; ++i)
-			tab.push_back(Producer<int>(i, val.k, simple_random).Spawn());
+			pool.push_back(std::make_unique<Producer<int>>(i, val.k));
 
-		for (auto &j : tab)
-			j.join();
+		for (auto &bu : pool) tab.push_back(bu->Spawn());	//from objects to thread
+		for (auto &j : tab) j.join();						//waiting whether objects compile.
 	}
 	catch(...)
 	{

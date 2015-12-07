@@ -33,7 +33,7 @@ BufferUser<T>::BufferUser()
 template <class T>
 std::thread BufferUser<T>::Spawn()
 {
-	return std::thread(&BufferUser::Spawn, this);
+	return std::thread([=] { work(); });
 }
 
 template <class T>

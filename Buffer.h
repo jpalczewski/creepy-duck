@@ -1,6 +1,14 @@
 #pragma once
 #include "monitor.h"
 #include <queue>
+#include <string>
+#include <iostream>
+
+inline void L(std::string str)
+{
+	std::cout << str << std::endl;
+}
+
 template<class T>
 class Buffer
 {
@@ -19,11 +27,13 @@ public:
 template <class T>
 Buffer<T>::Buffer(int size) : size_(size)
 {
+	L("Buffer::Buffer()");
 }
 
 template <class T>
 void Buffer<T>::push(T e)
 {
+	L("Buffer::push()");
 	m_.enter();
 	if (buf.size() == size_)
 		m_.wait(full_);
