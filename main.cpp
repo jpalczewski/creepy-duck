@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
 		//Variables related with thread-managing. 
 		std::vector<std::thread> tab;
-		std::vector< std::unique_ptr< BufferUser<int>>> pool;
+		std::vector< std::shared_ptr< BufferUser<int>>> pool;
 
 		//Variables realted with generating random numbers.
 		std::default_random_engine generator;
@@ -44,14 +44,19 @@ int main(int argc, char **argv)
 		BufferUser<int>::Descriptor = desc;
 		Producer<int>::Function = magic;
 
-
-		pool.push_back(std::make_unique<Client<int>>(val.n, val.k));
+		//Simplifying time.
+		pool.push_back(std::make_shared<Client<int>>(val.n, val.k));
 
 		for (auto i = 0; i < val.n; ++i)
-			pool.push_back(std::make_unique<Producer<int>>(i, val.k));
+			pool.push_back(std::make_shared<Producer<int>>(i, val.k));
 
-		for (auto &bu : pool) tab.push_back(bu->Spawn());	//from objects to thread
-		for (auto &j : tab) j.join();						//waiting whether objects compile.
+
+		auto Spawner = [&](auto i) { tab.push_back(i->Spawn()); };
+		auto Waiter = std::bind(&std::thread::join, std::placeholders::_1);
+		
+		std::for_each(pool.begin(), pool.end(), Spawner);
+		std::for_each(tab.begin(), tab.end(), Waiter);
+
 	}
 	catch(...)
 	{
